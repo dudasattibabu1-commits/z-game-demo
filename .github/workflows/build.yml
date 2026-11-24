@@ -30,11 +30,16 @@ jobs:
 
       - name: Find Flutter Project
         run: |
-          find app -name pubspec.yaml
+          PROJECT_DIR=$(dirname "$(find app -name pubspec.yaml -print -quit)")
+          if [ -z "$PROJECT_DIR" ] || [ "$PROJECT_DIR" = "." ]; then
+            echo "Flutter project not found!"
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Build APK
         run: |
-          cd app
+          cd "$PROJECT_DIR"
           flutter pub get
           flutter build apk --release
           
